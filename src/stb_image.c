@@ -223,6 +223,7 @@ extern "C" {
 extern stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
 
 #ifndef STBI_NO_STDIO
+extern signed char stbi_get_image_format(stbi_uc const *buffer, int len);
 extern stbi_uc *stbi_load            (char const *filename,     int *x, int *y, int *comp, int req_comp);
 extern stbi_uc *stbi_load_from_file  (FILE *f,                  int *x, int *y, int *comp, int req_comp);
 // for stbi_load_from_file, file pointer is left pointing immediately after image
@@ -530,6 +531,19 @@ void stbi_image_free(void *retval_from_stbi_load)
 static float   *ldr_to_hdr(stbi_uc *data, int x, int y, int comp);
 static stbi_uc *hdr_to_ldr(float   *data, int x, int y, int comp);
 #endif
+
+signed char stbi_get_image_format(stbi_uc const *buffer, int len)
+{
+   stbi s;
+   start_mem(&s,buffer,len);
+   if (stbi_jpeg_test(&s)) return 0;
+   if (stbi_png_test(&s))  return 1;
+   if (stbi_bmp_test(&s))  return 2;
+   if (stbi_gif_test(&s))  return 3;
+   if (stbi_psd_test(&s))  return 4;
+   if (stbi_pic_test(&s))  return 5;
+   return -1;
+}
 
 static unsigned char *stbi_load_main(stbi *s, int *x, int *y, int *comp, int req_comp)
 {

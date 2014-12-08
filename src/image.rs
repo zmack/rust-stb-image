@@ -13,6 +13,17 @@ use libc;
 use libc::{c_void, c_int};
 use std::slice::raw::mut_buf_as_slice;
 
+#[deriving(PartialEq, Show)]
+pub enum ImageFormat {
+    JPEG = 0x00,
+    PNG = 0x01,
+    BMP = 0x02,
+    GIF = 0x03,
+    PSD = 0x04,
+    PIC = 0x05,
+    Unknown = 0xFF
+}
+
 pub struct Image<T> {
     pub width   : uint,
     pub height  : uint,
@@ -38,6 +49,20 @@ pub enum LoadResult {
 pub fn load(path: &Path) -> LoadResult {
     let force_depth = 0;
     load_with_depth(path, force_depth, false)
+}
+
+impl ImageFormat {
+    fn new_from_i8(n: i8) -> ImageFormat {
+        match n {
+            0 => ImageFormat::JPEG,
+            1 => ImageFormat::PNG,
+            2 => ImageFormat::BMP,
+            3 => ImageFormat::GIF,
+            4 => ImageFormat::PSD,
+            5 => ImageFormat::PIC,
+            _ => ImageFormat::Unknown
+        }
+    }
 }
 
 
@@ -89,6 +114,12 @@ pub fn load_with_depth(path: &Path, force_depth: uint, convert_hdr: bool) -> Loa
                 }
             }
         })
+    }
+}
+
+pub fn get_image_format(buffer: &[u8]) -> ImageFormat {
+    unsafe {
+        ImageFormat::new_from_i8(stbi_get_image_format(buffer.as_ptr()))
     }
 }
 

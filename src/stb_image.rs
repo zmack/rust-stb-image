@@ -35,6 +35,8 @@ pub mod bindgen {
 #[link(name = "stb-image", kind = "static")]
 extern {
 
+pub fn stbi_get_image_format(buffer: *const stbi_uc) -> i8;
+
 pub fn stbi_load_from_memory(buffer: *const stbi_uc, len: c_int, x: *mut c_int, y: *mut c_int, comp: *mut c_int, req_comp: c_int) -> *mut stbi_uc;
 
 pub fn stbi_load(filename: *const c_char, x: *mut c_int, y: *mut c_int, comp: *mut c_int, req_comp: c_int) -> *mut stbi_uc;
